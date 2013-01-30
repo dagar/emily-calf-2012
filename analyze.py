@@ -50,24 +50,28 @@ def overlap_time(start1, end1, start2, end2):
     if end1 < start2 or end2 < start1:
         return 0
     else:
-        #print start1, end1
-        #print start2, end2
+        #print "calf A:", start1, end1
+        #print "calf B:", start2, end2
         times = [start1, end1, start2, end2]
         times.sort()
+        #print "Overlap found:", times[2] - times[1]
         return times[2] - times[1]
 
 
 def compare_calves(pen, calfa, calfb):
 
     day_sum = {}
+    day_freq = {}
     for day in calfa.keys():
         day_sum[day] = 0
+        day_freq[day] = 0
         for intervala in calfa[day]:
             for intervalb in calfb[day]:
                 current_overlap = overlap_time(intervala[0], intervala[1], intervalb[0], intervalb[1])
                 if (current_overlap != 0):
                     day_sum[day] += current_overlap.seconds
-        print "%d, %d, %d" % (pen, day, day_sum[day])
+                    day_freq[day] += 1
+        print "%d, %d, %d, %d" % (pen, day, day_sum[day], day_freq[day])
 
 
     return day_sum
@@ -76,7 +80,7 @@ def compare_calves(pen, calfa, calfb):
 def main():
     xls_name = sys.argv[1]
 
-    print "Pen, Day, Overlap"
+    print "Pen, Day, Overlap, Freq"
     for pen in range(1, 11):
         calfa = read_sheet(xls_name, '%dA' % pen)
         calfb = read_sheet(xls_name, '%dB' % pen)
