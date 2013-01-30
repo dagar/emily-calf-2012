@@ -5,23 +5,23 @@ import sys
 import xlrd
 import datetime
 
+YEAR = 2012
+MONTH = 06
+
 def convert_excel_date(xldate, day):
     date = xlrd.xldate_as_tuple(xldate, 1)
-
-    return datetime.datetime(2012, 06, day, date[3], date[4], date[5])
-
+    return datetime.datetime(YEAR, MONTH, day, date[3], date[4], date[5])
 
 def read_sheet(xls_name, sheet_name):
     ''' reads each sheet from the excel file '''
     workbook = xlrd.open_workbook(xls_name)
     worksheet = workbook.sheet_by_name(sheet_name)
 
-    ret = []
+    calf = {}
 
     nrows = worksheet.nrows
     meal_start_time = worksheet.cell_value(1, 4)
     for current_row in xrange(1, nrows):
-        calf = worksheet.cell_value(current_row, 0)
         week = int(worksheet.cell_value(current_row, 2))
         day = int(worksheet.cell_value(current_row, 3))
         end_time = worksheet.cell_value(current_row, 6)
@@ -32,10 +32,13 @@ def read_sheet(xls_name, sheet_name):
         else:
             next_meal_num = -1
 
+        if not calf.has_key(day):
+            calf[day] = []
+
         if next_meal_num != meal_num:
-            ret.append([calf, week, day, convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)])
+            calf[day].append([convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)])
             if next_meal_num == -1:
-                return ret
+                return calf
             else:
                 meal_start_time = worksheet.cell_value(current_row + 1, 4)
 
@@ -46,10 +49,34 @@ def overlap_time(start1, end1, start2, end2):
     else:
         return max(end1, end2) - min(start1, start2)
 
+def compare_calves(calfa, calfb):
+
+    day_sum = {}
+    for day in calfa.keys():
+        print "Day:", day,
+        day_sum[day] = 0
+        for intervala in calfa[day]:
+            for intervalb in calfb[day]:
+                current_overlap = overlap_time(intervala[0], intervala[1], intervalb[0], intervalb[1])
+                if (current_overlap != 0):
+                    day_sum[day] += current_overlap.seconds
+        print day_sum[day]
+
+
+    return day_sum
+
+
 def main():
     xls_name = sys.argv[1]
-    calf_a = read_sheet(xls_name, '1A')
-    calf_b = read_sheet(xls_name, '1B')
+
+    for pen in range(1, 11):
+        print "Pen", pen
+        calfa = read_sheet(xls_name, '%dA' % pen)
+        calfb = read_sheet(xls_name, '%dB' % pen)
+
+        compare_calves(calfa, calfb)
+
+        print
 
 
 if __name__ == '__main__':
