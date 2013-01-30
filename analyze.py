@@ -37,6 +37,8 @@ def read_sheet(xls_name, sheet_name):
 
         if next_meal_num != meal_num:
             calf[day].append([convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)])
+
+            print worksheet.cell_value(current_row, 1), convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)
             if next_meal_num == -1:
                 return calf
             else:
