@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+''' Emily Miller-Cushon 2013 '''
 
 import sys
 import xlrd
@@ -11,39 +12,35 @@ def convert_excel_date(xldate, day):
 
 
 def read_sheet(xls_name, sheet_name):
+    ''' reads each sheet from the excel file '''
     workbook = xlrd.open_workbook(xls_name)
     worksheet = workbook.sheet_by_name(sheet_name)
 
     ret = []
 
     nrows = worksheet.nrows
-    current_meal_num = int(worksheet.cell_value(1, 9))
     meal_start_time = worksheet.cell_value(1, 4)
-    for r in xrange(1, nrows):
-        calf = worksheet.cell_value(r, 0)
-        trmt = worksheet.cell_value(r, 1)
-        week = int(worksheet.cell_value(r, 2))
-        day = int(worksheet.cell_value(r, 3))
-        start_time = worksheet.cell_value(r, 4)
-        scan = worksheet.cell_value(r, 5)
-        end_time = worksheet.cell_value(r, 6)
-        meal_num = int(worksheet.cell_value(r, 9))
+    for current_row in xrange(1, nrows):
+        calf = worksheet.cell_value(current_row, 0)
+        week = int(worksheet.cell_value(current_row, 2))
+        day = int(worksheet.cell_value(current_row, 3))
+        end_time = worksheet.cell_value(current_row, 6)
+        meal_num = int(worksheet.cell_value(current_row, 9))
 
-        if r < nrows - 1:
-            next_meal_num = int(worksheet.cell_value(r + 1, 9))
+        if current_row < nrows - 1:
+            next_meal_num = int(worksheet.cell_value(current_row + 1, 9))
         else:
             next_meal_num = -1
 
         if next_meal_num != meal_num:
-            feeding_time = end_time - meal_start_time
-            ret.append([calf, week, day, convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day), convert_excel_date(feeding_time, day)])
-            current_meal_num = meal_num
+            ret.append([calf, week, day, convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)])
             if next_meal_num == -1:
                 return ret
             else:
-                meal_start_time = worksheet.cell_value(r + 1, 4)
+                meal_start_time = worksheet.cell_value(current_row + 1, 4)
 
 def overlap_time(start1, end1, start2, end2):
+    ''' compute overlaping time between two intervals '''
     if end1 < start2 or end2 < start1:
         return 0
     else:
