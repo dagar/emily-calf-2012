@@ -38,7 +38,7 @@ def read_sheet(xls_name, sheet_name):
         if next_meal_num != meal_num:
             calf[day].append([convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)])
 
-            print worksheet.cell_value(current_row, 1), convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)
+            #print worksheet.cell_value(current_row, 0), convert_excel_date(meal_start_time, day), convert_excel_date(end_time, day)
             if next_meal_num == -1:
                 return calf
             else:
@@ -46,10 +46,16 @@ def read_sheet(xls_name, sheet_name):
 
 def overlap_time(start1, end1, start2, end2):
     ''' compute overlaping time between two intervals '''
+
     if end1 < start2 or end2 < start1:
         return 0
     else:
-        return max(end1, end2) - min(start1, start2)
+        #print start1, end1
+        #print start2, end2
+        times = [start1, end1, start2, end2]
+        times.sort()
+        return times[2] - times[1]
+
 
 def compare_calves(calfa, calfb):
 
