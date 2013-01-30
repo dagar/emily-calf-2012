@@ -27,7 +27,6 @@ def read_sheet(xls_name, sheet_name):
         start_time = worksheet.cell_value(r, 4)
         scan = worksheet.cell_value(r, 5)
         end_time = worksheet.cell_value(r, 6)
-
         meal_num = int(worksheet.cell_value(r, 9))
 
         if r < nrows - 1:
@@ -44,11 +43,16 @@ def read_sheet(xls_name, sheet_name):
             else:
                 meal_start_time = worksheet.cell_value(r + 1, 4)
 
+def overlap_time(start1, end1, start2, end2):
+    if end1 < start2 or end2 < start1:
+        return 0
+    else:
+        return max(end1, end2) - min(start1, start2)
 
 def main():
-    workbook = read_sheet(sys.argv[1], '1A')
-
-    print workbook
+    xls_name = sys.argv[1]
+    calf_a = read_sheet(xls_name, '1A')
+    calf_b = read_sheet(xls_name, '1B')
 
 
 if __name__ == '__main__':
