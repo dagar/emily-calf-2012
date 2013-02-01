@@ -22,7 +22,6 @@ def read_sheet(xls_name, sheet_name):
     nrows = worksheet.nrows
     meal_start_time = worksheet.cell_value(1, 4)
     for current_row in xrange(1, nrows):
-        week = int(worksheet.cell_value(current_row, 2))
         day = int(worksheet.cell_value(current_row, 3))
         end_time = worksheet.cell_value(current_row, 6)
         meal_num = int(worksheet.cell_value(current_row, 9))
